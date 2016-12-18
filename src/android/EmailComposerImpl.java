@@ -63,6 +63,11 @@ public class EmailComposerImpl {
      */
     static private final String ATTACHMENT_FOLDER = "/email_composer";
 
+    private static final String GET_ACCOUNTS = Manifest.permission.GET_ACCOUNTS;
+    private static final int SEARCH_REQ_CODE = 0;
+
+
+
     /**
      * Cleans the attachment folder.
      *
@@ -511,15 +516,28 @@ public class EmailComposerImpl {
      * true if available, otherwise false
      */
     private boolean isEmailAccountConfigured (Context ctx) {
-        AccountManager am  = AccountManager.get(ctx);
+	if(cordova.hasPermission(GET_ACCOUNTS))
+	{
+	    AccountManager am  = AccountManager.get(ctx);
 
-        try {
-           return am.getAccounts().length > 0;
-        } catch (Exception e) {
-            Log.e(LOG_TAG, "Missing GET_ACCOUNTS permission.");
-            return true;
-        }
+		try {
+		   return am.getAccounts().length > 0;
+		} catch (Exception e) {
+		    Log.e(LOG_TAG, "Missing GET_ACCOUNTS permission.");
+		    return true;
+		}
+	}
+	else
+	{
+	    getReadPermission(SEARCH_REQ_CODE);
+	}        
     }
+
+	private void getReadPermission(int requestCode)
+	{
+	    cordova.requestPermission(this, requestCode, READ);
+	}
+
 
     /**
      * Ask the package manager if the app is installed on the device.
