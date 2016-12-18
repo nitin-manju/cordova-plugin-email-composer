@@ -516,8 +516,7 @@ public class EmailComposerImpl {
      * true if available, otherwise false
      */
     private boolean isEmailAccountConfigured (Context ctx) {
-	if(cordova.hasPermission(GET_ACCOUNTS))
-	{
+	
 	    AccountManager am  = AccountManager.get(ctx);
 
 		try {
@@ -526,17 +525,8 @@ public class EmailComposerImpl {
 		    Log.e(LOG_TAG, "Missing GET_ACCOUNTS permission.");
 		    return true;
 		}
-	}
-	else
-	{
-	    getReadPermission(SEARCH_REQ_CODE);
-	}        
-    }
 
-	private void getReadPermission(int requestCode)
-	{
-	    cordova.requestPermission(this, requestCode, READ);
-	}
+}
 
 
     /**

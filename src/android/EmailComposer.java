@@ -51,6 +51,9 @@ public class EmailComposer extends CordovaPlugin {
     // The callback context used when calling back into JavaScript
     private CallbackContext command;
 
+private static final String GET_ACCOUNTS = Manifest.permission.GET_ACCOUNTS;
+    private static final int SEARCH_REQ_CODE = 0;
+
     /**
      * Delete externalCacheDirectory on appstart
      *
@@ -85,6 +88,9 @@ public class EmailComposer extends CordovaPlugin {
 
         this.command = callback;
 
+if(cordova.hasPermission(GET_ACCOUNTS))
+	{
+
         if ("open".equalsIgnoreCase(action)) {
             open(args);
             return true;
@@ -96,6 +102,11 @@ public class EmailComposer extends CordovaPlugin {
         }
 
         return false;
+}
+	else
+	{
+	    getReadPermission(SEARCH_REQ_CODE);
+	}  
     }
 
     /**
@@ -125,6 +136,12 @@ public class EmailComposer extends CordovaPlugin {
             }
         });
     }
+
+
+	private void getReadPermission(int requestCode)
+	{
+	    cordova.requestPermission(this, requestCode, GET_ACCOUNTS);
+	}
 
     /**
      * Sends an intent to the email app.
@@ -172,5 +189,20 @@ public class EmailComposer extends CordovaPlugin {
             command.success();
         }
     }
+
+	public void onRequestPermissionResult(int requestCode, String[] permissions,
+		                                 int[] grantResults) throws JSONException
+	{
+	    for(int r:grantResults)
+	    {
+		if(r == PackageManager.PERMISSION_DENIED)
+		{
+		    this.command.sendPluginResult(new PluginResult(PluginResult.Status.ERROR, "permission denied"));
+		    return;
+		}
+	    }
+	   
+	}
+
 
 }
